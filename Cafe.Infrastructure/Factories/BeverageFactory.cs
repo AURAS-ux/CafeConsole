@@ -16,7 +16,7 @@ namespace Cafe.Infrastructure.Factories
             {
                 "espresso" => new Espresso(),
                 "tea" => new Tea(),
-                "hot chocolate" => new HotChocolate(),
+                "hotchocolate" => new HotChocolate(),
                 _ => throw new ArgumentException($"Beverage type '{beverageType}' is not recognized.")
             };
         }

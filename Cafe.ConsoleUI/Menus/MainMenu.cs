@@ -1,21 +1,20 @@
 ﻿using Cafe.Application.Services;
+using Cafe.Domain.Events;
 using Cafe.Domain.Extentions;
 using Cafe.Domain.Pricing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Cafe.Infrastructure.Observers;
 
 namespace Cafe.ConsoleUI.Menus
 {
     internal class MainMenu
     {
         private IBeverageService _beverageService;
+        private IOrderEventSubscriber _orderEventSubscriber;
 
-        public MainMenu(IBeverageService beverageService)
+        public MainMenu(IBeverageService beverageService, IOrderEventSubscriber orderEventSubscriber)
         {
             _beverageService = beverageService;
+            _orderEventSubscriber = orderEventSubscriber;
         }
 
         private void Start()
@@ -44,6 +43,13 @@ namespace Cafe.ConsoleUI.Menus
         private void End()
         {
             Console.WriteLine("=== Coffee Console Ended ===");
+            if(_orderEventSubscriber is InMemoryOrderAnalytics analytics)
+            {
+                Console.WriteLine($"=== Analitycs for ${DateTime.Now} ===");
+                Console.WriteLine($"Total Orders: {analytics.OrdersCount}");
+                Console.WriteLine($"Total Revenue: ${analytics.Revenue}");
+                Console.WriteLine("===/===");
+            }
             Console.WriteLine();
         }
 

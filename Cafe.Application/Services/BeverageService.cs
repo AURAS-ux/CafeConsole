@@ -1,10 +1,10 @@
 ﻿using Cafe.Domain.Beverages;
 using Cafe.Domain.Beverages.Decorators;
+using Cafe.Domain.Events;
 using Cafe.Domain.Extentions;
 using Cafe.Domain.Factories;
 using Cafe.Domain.Order;
 using Cafe.Domain.Pricing;
-using System.Collections.Generic;
 
 namespace Cafe.Application.Services
 {
@@ -15,12 +15,14 @@ namespace Cafe.Application.Services
         private Receipt _receipt = new Receipt();
 
         private IBeverage? _beverage;
+        private IOrderEventPublisher _publisher;
 
-        public BeverageService(IBeverageFactory beverageFactory)
+        public BeverageService(IBeverageFactory beverageFactory, IOrderEventPublisher publisher)
         {
             _beverageFactory = beverageFactory;
             _receipt.OrderId = Guid.NewGuid();
             _receipt.At = DateTime.Now;
+            _publisher = publisher;
         }
 
         public decimal ApplyPricing()
@@ -64,6 +66,9 @@ namespace Cafe.Application.Services
 
         public Receipt IssueReceipt()
         {
+            _publisher.Published(
+                new OrderPlaced(_receipt.OrderId, _receipt.At, string.Join(", ", _receipt.Items.Select(i => i.Describe())), _receipt.Subtotal, _receipt.Total)
+                );
             return _receipt;
         }
 
