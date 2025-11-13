@@ -12,7 +12,7 @@ namespace Cafe.Application.Services
     {
         private IBeverageFactory _beverageFactory;
         private IPricingStrategy? _pricingStrategy;
-        private Receipt _receipt = new Receipt();
+        private Receipt _receipt;
 
         private IBeverage? _beverage;
         private IOrderEventPublisher _publisher;
@@ -20,8 +20,6 @@ namespace Cafe.Application.Services
         public BeverageService(IBeverageFactory beverageFactory, IOrderEventPublisher publisher)
         {
             _beverageFactory = beverageFactory;
-            _receipt.OrderId = Guid.NewGuid();
-            _receipt.At = DateTime.Now;
             _publisher = publisher;
         }
 
@@ -74,7 +72,12 @@ namespace Cafe.Application.Services
 
         public void Serve(string beverageType)
         {
-            _receipt.Items.Clear();
+            _receipt = new Receipt
+            {
+                OrderId = Guid.NewGuid(),
+                At = DateTime.UtcNow,
+                Items = new List<string>()
+            };
             _beverage = _beverageFactory.CreateBeverage(beverageType);
             _receipt.Items.Add(_beverage.Name);
         }
