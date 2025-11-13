@@ -20,7 +20,7 @@ namespace Cafe.Domain.Extentions
             {
                 foreach (var item in receipt.Items)
                 {
-                    sb.AppendLine($"  • {item.Name} — ${item.Cost():0.00}");
+                    sb.AppendLine($"  • {item}");
                 }
             }
             else

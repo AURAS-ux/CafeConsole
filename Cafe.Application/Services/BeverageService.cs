@@ -60,14 +60,14 @@ namespace Cafe.Application.Services
                     "extrashot" => new ExtraShotDecorator(_beverage),
                     _ => _beverage
                 };
-                _receipt.Items.Add(_beverage);
+                _receipt.Items.Add(addOn);
             }
         }
 
         public Receipt IssueReceipt()
         {
             _publisher.Published(
-                new OrderPlaced(_receipt.OrderId, _receipt.At, string.Join(", ", _receipt.Items.Select(i => i.Describe())), _receipt.Subtotal, _receipt.Total)
+                new OrderPlaced(_receipt.OrderId, _receipt.At, string.Join(", ", _receipt.Items.Select(i => i)), _receipt.Subtotal, _receipt.Total)
                 );
             return _receipt;
         }
@@ -76,7 +76,7 @@ namespace Cafe.Application.Services
         {
             _receipt.Items.Clear();
             _beverage = _beverageFactory.CreateBeverage(beverageType);
-            _receipt.Items.Add(_beverage);
+            _receipt.Items.Add(_beverage.Name);
         }
 
         public void SetPricingStrategy(PricingStrategy strategy)

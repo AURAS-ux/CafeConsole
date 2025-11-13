@@ -12,7 +12,7 @@ namespace Cafe.Domain.Extentions
     {
         public static OrderPlaced ToOrderPlaced(this Receipt receipt)
         {
-            return new OrderPlaced(receipt.OrderId,receipt.At,string.Join(", ",receipt.Items.Select(item => item.Describe())),receipt.Subtotal,receipt.Total);
+            return new OrderPlaced(receipt.OrderId,receipt.At,string.Join(", ",receipt.Items.Select(item => item)),receipt.Subtotal,receipt.Total);
         }
     }
 }
