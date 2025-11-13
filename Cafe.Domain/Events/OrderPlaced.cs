@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Cafe.Domain.Events
 {
-    public sealed record OrderPlaced(
+    public readonly record struct OrderPlaced(
         Guid OrderId,
         DateTimeOffset At,
         string Description,

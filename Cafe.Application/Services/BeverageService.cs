@@ -54,8 +54,11 @@ namespace Cafe.Application.Services
                 _beverage = addOn.ToLower() switch
                 {
                     "milk" => new MilkDecorator(_beverage),
-                    "syrup" => new SyrupDecorator(_beverage,"vanills"), //TODO: adauga mai multe arome
+                    "syrup vanilla" => new SyrupDecorator(_beverage,"vanilla"),
+                    "syrup caramel" => new SyrupDecorator(_beverage,"caramel"),
+                    "syrup hazelnut" => new SyrupDecorator(_beverage,"hazelnut"),
                     "extrashot" => new ExtraShotDecorator(_beverage),
+                    
                     _ => _beverage
                 };
                 _receipt.Items.Add(addOn);

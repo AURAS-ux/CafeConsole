@@ -108,8 +108,13 @@ namespace Cafe.ConsoleUI.Menus
                 }
             }
             while (running);
-
-            var subtotal = _beverageService.ApplyPricing(); //TODO: Use subtotal
+            try
+            {
+                _beverageService.ApplyPricing(); //TODO: Use subtotal
+            }catch(InvalidOperationException ioe)
+            {
+                Console.WriteLine($"Error calculating the price {ioe.Message}");
+            }
         }
 
         private void SelectAddOns()
@@ -132,7 +137,7 @@ namespace Cafe.ConsoleUI.Menus
                         selectedAddOns.Add("milk");
                         break;
                     case "2":
-                        selectedAddOns.Add("syrup");
+                        SelectSyrups(ref selectedAddOns);
                         break;
                     case "3":
                         selectedAddOns.Add("extrashot");
@@ -150,13 +155,52 @@ namespace Cafe.ConsoleUI.Menus
             _beverageService.Customize(selectedAddOns);
         }
 
+        private void SelectSyrups(ref List<string> selectedAddOns)
+        {
+            Console.WriteLine("=== Syrup Selection ===");
+            Console.WriteLine();
+            Console.WriteLine("1. Vanilla");
+            Console.WriteLine("2. Caramel");
+            Console.WriteLine("3. Hazelnut");
+            Console.WriteLine("0. Back");
+            Console.WriteLine("===/===");
+            bool running = true;
+            do
+            {
+                string input = Utils.RequestInput();
+                switch (input)
+                {
+                    case "1":
+                        selectedAddOns.Add("syrup vanilla");
+                        running = false;
+                        break;
+                    case "2":
+                        selectedAddOns.Add("syrup caramel");
+                        running = false;
+                        break;
+                    case "3":
+                        selectedAddOns.Add("syrup hazelnut");
+                        running = false;
+                        break;
+                    case "0":
+                        running = false;
+                        break;
+                    default:
+                        Console.WriteLine("Invalid selection. Please try again.");
+                        break;
+                }
+            } while(running);
+            Console.WriteLine("Finished selection");
+            Console.WriteLine("Back to addons selection\n");
+        }
+
         private void SelectBeverage()
         {
             Console.WriteLine("=== Available Beverages ===");
             Console.WriteLine();
-            Console.WriteLine("1. Espresso (base $2.50)");
-            Console.WriteLine("2. Tea (base $2.00)");
-            Console.WriteLine("3. Hot Chocolate (base $3.00)");
+            Console.WriteLine("1. Espresso (base 2.50)");
+            Console.WriteLine("2. Tea (base 2.00)");
+            Console.WriteLine("3. Hot Chocolate (base 3.00)");
             Console.WriteLine("===/===");
             Console.WriteLine();
             bool running = true;
