@@ -6,12 +6,18 @@ using System.Threading.Tasks;
 
 namespace Cafe.Domain.Pricing
 {
-    public class PricingStrategyManager
+    public class PricingStrategyManager : IPricingStrategyManager
     {
-        private static RegularPricing _regularPricingStrategy = new RegularPricing();
-        private static HappyHourPricing _happyHourPricingStrategy = new HappyHourPricing();
+        private readonly RegularPricing _regularPricingStrategy;
+        private readonly HappyHourPricing _happyHourPricingStrategy;
 
-        public static IPricingStrategy GetStrategy(PricingStrategy strategy)
+        public PricingStrategyManager(RegularPricing regularPricingStrategy, HappyHourPricing happyHourPricingStrategy)
+        {
+            _regularPricingStrategy = regularPricingStrategy;
+            _happyHourPricingStrategy = happyHourPricingStrategy;
+        }
+
+        public IPricingStrategy GetStrategy(PricingStrategy strategy)
         {
             switch(strategy)
             {

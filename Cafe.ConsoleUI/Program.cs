@@ -10,7 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 var services = new ServiceCollection();
 services.AddSingleton<IBeverageFactory, BeverageFactory>();
-services.AddSingleton<IBeverageService, BeverageService>();
+services.AddScoped<IBeverageService, BeverageService>();
+services.AddSingleton<IPricingStrategyManager, PricingStrategyManager>();
+services.AddSingleton<RegularPricing>();
+services.AddSingleton<HappyHourPricing>();
 services.AddSingleton<IOrderEventPublisher, SimpleOrderEventPublisher>();
 services.AddSingleton<IOrderEventSubscriber, ConsoleOrderObserver>();
 services.AddSingleton<IOrderEventSubscriber, InMemoryOrderAnalytics>();

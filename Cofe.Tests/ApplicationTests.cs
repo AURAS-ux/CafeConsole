@@ -7,11 +7,6 @@ using Cafe.Domain.Pricing;
 using Cafe.Infrastructure.Factories;
 using Cafe.Infrastructure.Observers;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cofe.Tests
 {
@@ -20,11 +15,13 @@ namespace Cofe.Tests
         private Mock<IBeverageFactory> beverageFactoryMock;
         private Mock<IOrderEventPublisher> eventPublisherMock;
         private IBeverageService beverageService;
+        private Mock<IPricingStrategyManager> pricingStrategyManagerMock;
         public ApplicationTests()
         {
             eventPublisherMock = new Mock<IOrderEventPublisher>();
             beverageFactoryMock = new Mock<IBeverageFactory>();
-            beverageService = new BeverageService(beverageFactoryMock.Object, eventPublisherMock.Object);
+            pricingStrategyManagerMock = new Mock<IPricingStrategyManager>();
+            beverageService = new BeverageService(beverageFactoryMock.Object, eventPublisherMock.Object,pricingStrategyManagerMock.Object);
         }
 
         [Fact]
@@ -49,6 +46,8 @@ namespace Cofe.Tests
             //Act
             beverageService.Serve("espresso");
             beverageService.Customize(["milk", "extrashot"]);
+            pricingStrategyManagerMock.Setup(mock => mock.GetStrategy(PricingStrategy.Regular))
+                .Returns(new RegularPricing());
             beverageService.SetPricingStrategy(PricingStrategy.Regular);
             decimal total = beverageService.ApplyPricing();
 
@@ -69,6 +68,8 @@ namespace Cofe.Tests
             //Act
             beverageService.Serve("espresso");
             beverageService.Customize(["milk", "extrashot"]);
+            pricingStrategyManagerMock.Setup(mock => mock.GetStrategy(PricingStrategy.Regular))
+                .Returns(new RegularPricing());
             beverageService.SetPricingStrategy(PricingStrategy.Regular);
             var receipt = beverageService.IssueReceipt();
 
@@ -90,6 +91,8 @@ namespace Cofe.Tests
 
             //Act
             beverageService.Serve("espresso");
+            pricingStrategyManagerMock.Setup(mock => mock.GetStrategy(PricingStrategy.Regular))
+                .Returns(new RegularPricing());
             beverageService.SetPricingStrategy(PricingStrategy.Regular);
             var receipt = beverageService.IssueReceipt();
             var total = beverageService.ApplyPricing();
@@ -113,6 +116,8 @@ namespace Cofe.Tests
 
             //Act
             beverageService.Serve("espresso");
+            pricingStrategyManagerMock.Setup(mock => mock.GetStrategy(PricingStrategy.HappyHour))
+                .Returns(new HappyHourPricing());
             beverageService.SetPricingStrategy(PricingStrategy.HappyHour);
             var receipt = beverageService.IssueReceipt();
             var total = beverageService.ApplyPricing();
@@ -153,7 +158,7 @@ namespace Cofe.Tests
             var beverage = new Mock<IBeverage>();
             var subscriber = new Mock<IOrderEventSubscriber>();
             var simplePublisher = new SimpleOrderEventPublisher([subscriber.Object]);
-            var beverageServiceWithPublisher = new BeverageService(beverageFactoryMock.Object, simplePublisher);
+            var beverageServiceWithPublisher = new BeverageService(beverageFactoryMock.Object, simplePublisher, pricingStrategyManagerMock.Object);
 
             beverage.Setup(b => b.Name).Returns("Espresso");
             beverage.Setup(b => b.Cost()).Returns(2.50m);
@@ -176,7 +181,7 @@ namespace Cofe.Tests
 
             var subscriber = new InMemoryOrderAnalytics();
             var simplePublisher = new SimpleOrderEventPublisher([subscriber]);
-            var beverageServiceWithPublisher = new BeverageService(beverageFactoryMock.Object, simplePublisher);
+            var beverageServiceWithPublisher = new BeverageService(beverageFactoryMock.Object, simplePublisher, pricingStrategyManagerMock.Object);
 
             var beverage = new Mock<IBeverage>();
             beverage.Setup(b => b.Name).Returns("Espresso");
@@ -191,11 +196,15 @@ namespace Cofe.Tests
 
             //Act
             beverageServiceWithPublisher.Serve("espresso");
+            pricingStrategyManagerMock.Setup(mock => mock.GetStrategy(PricingStrategy.Regular))
+                .Returns(new RegularPricing());
             beverageServiceWithPublisher.SetPricingStrategy(PricingStrategy.Regular);
             var total = beverageServiceWithPublisher.ApplyPricing();
             var receipt = beverageServiceWithPublisher.IssueReceipt();
 
             beverageServiceWithPublisher.Serve("tea");
+            pricingStrategyManagerMock.Setup(mock => mock.GetStrategy(PricingStrategy.Regular))
+                .Returns(new RegularPricing());
             beverageServiceWithPublisher.SetPricingStrategy(PricingStrategy.Regular);
             var total2 = beverageServiceWithPublisher.ApplyPricing();
             var receipt2 = beverageServiceWithPublisher.IssueReceipt();

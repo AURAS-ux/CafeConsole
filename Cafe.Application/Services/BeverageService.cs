@@ -11,16 +11,19 @@ namespace Cafe.Application.Services
     public class BeverageService : IBeverageService
     {
         private IBeverageFactory _beverageFactory;
+        private IPricingStrategyManager? _pricingStrategyManager;
         private IPricingStrategy? _pricingStrategy;
         private Receipt _receipt;
 
         private IBeverage? _beverage;
         private IOrderEventPublisher _publisher;
 
-        public BeverageService(IBeverageFactory beverageFactory, IOrderEventPublisher publisher)
+        public BeverageService(IBeverageFactory beverageFactory, IOrderEventPublisher publisher, IPricingStrategyManager pricingStrategyManager)
         {
             _beverageFactory = beverageFactory;
             _publisher = publisher;
+            _pricingStrategyManager = pricingStrategyManager;
+            _receipt = new Receipt();
         }
 
         public decimal ApplyPricing()
@@ -87,7 +90,7 @@ namespace Cafe.Application.Services
 
         public void SetPricingStrategy(PricingStrategy strategy)
         {
-            _pricingStrategy = PricingStrategyManager.GetStrategy(strategy);
+            _pricingStrategy = _pricingStrategyManager!.GetStrategy(strategy);
             _receipt.Pricing = _pricingStrategy.GetName();
         }
     }
